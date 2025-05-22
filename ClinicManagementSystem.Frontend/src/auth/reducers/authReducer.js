@@ -23,6 +23,15 @@ export const authReducer = ( state, action ) => {
         refreshToken: action.payload.refreshToken,
         error: null,
       };
+    case REGISTER_SUCCESS:
+      return {
+        ...state,
+        isAuthenticated: true,
+        user: action.payload.user,
+        token: action.payload.token,
+        refreshToken: action.payload.refreshToken,
+        error: null,
+      }
     case LOGOUT:
       return { ...initialState, loading: false };
     case AUTH_ERROR:
