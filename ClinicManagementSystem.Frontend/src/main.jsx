@@ -8,9 +8,7 @@ import { AuthProvider } from './auth/providers/AuthProvider'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <App />
     </BrowserRouter>
   </StrictMode>,
 )
