@@ -87,17 +87,16 @@ namespace ClinicManagementSystem.Backend.Controllers
             return Ok(new AuthReponseDTO { Status = "Success", Token = token, RefreshToken = refreshToken, Message = "Login successful." });
         }
 
-        [Authorize]
         [HttpPost("refreshToken")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenDTO tokenDto)
         {
             var principal = GetPrincipalFromExpiredToken(tokenDto.Token);
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var userName = principal.Identity!.Name;
 
-            if (userId == null)
+            if (userName == null)
                 return BadRequest("Token inválido");
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByNameAsync(userName);
 
             if (user == null || user.RefreshToken != tokenDto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
                 return Unauthorized();
@@ -124,7 +123,7 @@ namespace ClinicManagementSystem.Backend.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id!),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Email, user.Email!) // Fix: Added 'user.Id' as the second argument
+                new Claim(ClaimTypes.Name, user.Email!) // Fix: Added 'user.Id' as the second argument
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
